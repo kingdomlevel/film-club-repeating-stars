@@ -39,7 +39,6 @@ function App() {
       );
 
       Promise.all(filmDetailPromises).then(filmDetailResults => {
-        debugger;
         // get actors from film data
         const repeatingActors = filmDetailResults.map(film => film.cast.map(actor => actor.name)).flat();
         const actorOccurences = getActorOccurences(repeatingActors);
@@ -48,28 +47,42 @@ function App() {
         // set chart data
         const chartOptions = {
           chart: {
-            type: 'bar'
+            type: 'column'
           },
           title: {
             text: 'Actor appearences'
-          }
+          },
+          xAxis: {
+            type: 'category'
+          },
+          yAxis: {
+            title: {
+              text: 'number of appearences'
+            }
+          },
+          series: [
+            {
+              name: "actors",
+              data: null
+            }
+          ]
         };
 
         const chartSeries = [];
         for (let actorName in actorOccurences) {
           const bar = {
             name: actorName,
-            data: actorOccurences[actorName]
+            y: actorOccurences[actorName]
           }
           chartSeries.push(bar);
         };
 
         // sort descending
-        chartSeries.sort((actor1, actor2) => actor2.data - actor1.data);
+        chartSeries.sort((actor1, actor2) => actor2.y - actor1.y);
 
 
 
-        chartOptions["series"] = chartSeries.slice(0, 15);
+        chartOptions.series[0].data = chartSeries.slice(0, 15);
 
         setChartOptions(chartOptions);
       })
