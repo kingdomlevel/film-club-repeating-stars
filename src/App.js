@@ -10,17 +10,17 @@ function App() {
   const [chartOptions, setChartOptions] = useState(null);
 
   const getActorOccurences = actors => {
-    const appearences = {};
+    const appearances = {};
 
     for (let actor of actors) {
-      if (appearences.hasOwnProperty(actor)) {
-        appearences[actor] += 1;
+      if (appearances.hasOwnProperty(actor)) {
+        appearances[actor] += 1;
       } else {
-        appearences[actor] = 1;
+        appearances[actor] = 1;
       }
     }
 
-    return appearences;
+    return appearances;
   }
 
   useEffect(() => {
@@ -50,19 +50,19 @@ function App() {
             type: 'column'
           },
           title: {
-            text: 'Actor appearences'
+            text: 'Actor appearances'
           },
           xAxis: {
             type: 'category'
           },
           yAxis: {
             title: {
-              text: 'number of appearences'
+              text: 'number of appearances'
             }
           },
           series: [
             {
-              name: "actors",
+              name: "appearances",
               data: null
             }
           ]
