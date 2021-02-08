@@ -103,6 +103,7 @@ function App() {
     <div className="App">
       <FilmInput setFilmNames={setFilmNames}/>
       {actorChart}
+      <p>cast data from <a href="https://www.themoviedb.org/">The Movie Database</a></p>
     </div>
   );
 }
