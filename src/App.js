@@ -9,18 +9,22 @@ function App() {
   const [filmNames, setFilmNames] = useState([]);
   const [chartOptions, setChartOptions] = useState(null);
 
-  const getActorOccurences = actors => {
-    const appearances = {};
+  const getActorOccurences = actorAppearancess => {
+    const uniqueActorAppearances = {};
 
-    for (let actor of actors) {
-      if (appearances.hasOwnProperty(actor)) {
-        appearances[actor] += 1;
+    for (let actorAppearance of actorAppearancess) {
+      if (uniqueActorAppearances.hasOwnProperty(actorAppearance.name)) {
+        uniqueActorAppearances[actorAppearance.name].count += 1;
+        uniqueActorAppearances[actorAppearance.name].films.push(actorAppearance.film);
       } else {
-        appearances[actor] = 1;
+        uniqueActorAppearances[actorAppearance.name] = {
+          count: 1,
+          films: [actorAppearance.film]
+        };
       }
     }
 
-    return appearances;
+    return uniqueActorAppearances;
   }
 
   useEffect(() => {
@@ -40,7 +44,12 @@ function App() {
 
       Promise.all(filmDetailPromises).then(filmDetailResults => {
         // get actors from film data
-        const repeatingActors = filmDetailResults.map(film => film.cast.map(actor => actor.name)).flat();
+        const repeatingActors = filmDetailResults.map((film, index) => film.cast.map(actor => {
+          return {
+            name: actor.name, 
+            film: filmNames[index]
+          }
+        })).flat();
         const actorOccurences = getActorOccurences(repeatingActors);
         console.log('actor occurences', actorOccurences);
 
@@ -48,6 +57,11 @@ function App() {
         const chartOptions = {
           chart: {
             type: 'column'
+          },
+          tooltip: {
+            formatter: function() {
+              return formatTooltip(this.point.appearsIn);
+            }
           },
           title: {
             text: 'Actor appearances'
@@ -72,7 +86,8 @@ function App() {
         for (let actorName in actorOccurences) {
           const bar = {
             name: actorName,
-            y: actorOccurences[actorName]
+            y: actorOccurences[actorName].count,
+            appearsIn: actorOccurences[actorName].films
           }
           chartSeries.push(bar);
         };
@@ -98,6 +113,16 @@ function App() {
   } else {
     actorChart = null;
   }
+
+  const formatTooltip = filmAppearances => {
+    let output = "Appears in:"
+    const bullets = filmAppearances.reduce((list, filmName) => {
+      return list + `<br/>  • ${filmName}`
+    }, '')
+    return output + bullets;
+    
+
+  };
 
   return (
     <div className="App">
